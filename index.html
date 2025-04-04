@@ -47,7 +47,12 @@
 </head>
 <body>
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Villa ara...">
+        <div>
+            <h3>Villa Arama</h3>
+        </div>
+        <div>
+            <input type="text" id="searchInput" placeholder="Villa ara...">
+        </div>
     </div>
     <div id="results"></div>
 
@@ -101,7 +106,7 @@
         // Sayfa yüklendiğinde
         window.onload = async () => {
             try {
-                const response = await fetch('folder_structure.json');
+                const response = await fetch('folder_structure2.json');
                 folderData = await response.json();
                 
                 const searchInput = document.getElementById('searchInput');
