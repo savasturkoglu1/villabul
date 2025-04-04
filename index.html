@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Villa Arama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .result-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+        .result-item:hover {
+            background-color: #f5f5f5;
+        }
+        .villa-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .villa-url {
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .villa-url:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Villa ara...">
+    </div>
+    <div id="results"></div>
+
+    <script>
+        let folderData = []; // folder_structure.json verisi buraya yüklenecek
+
+        // Debounce fonksiyonu
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Arama fonksiyonu
+        function searchVillas(query) {
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+
+            if (!query) return;
+
+            const filteredVillas = folderData.filter(item => 
+                item.isim.toLowerCase().includes(query.toLowerCase())
+            );
+
+            filteredVillas.forEach(villa => {
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'villa-name';
+                nameDiv.textContent = villa.isim;
+                
+                const urlLink = document.createElement('a');
+                urlLink.className = 'villa-url';
+                urlLink.href = villa.url;
+                urlLink.target = '_blank';
+                urlLink.textContent = villa.url;
+                
+                div.appendChild(nameDiv);
+                div.appendChild(urlLink);
+                results.appendChild(div);
+            });
+        }
+
+        // Sayfa yüklendiğinde
+        window.onload = async () => {
+            try {
+                const response = await fetch('folder_structure.json');
+                folderData = await response.json();
+                
+                const searchInput = document.getElementById('searchInput');
+                const debouncedSearch = debounce(searchVillas, 300);
+                
+                searchInput.addEventListener('input', (e) => {
+                    debouncedSearch(e.target.value);
+                });
+            } catch (error) {
+                console.error('Veri yüklenirken hata oluştu:', error);
+            }
+        };
+    </script>
+</body>
+</html>
